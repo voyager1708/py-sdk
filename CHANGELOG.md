@@ -6,7 +6,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Table of Contents
 
-- [Unreleased](#unreleased)
+- [Unreleased](#unreleased
+- [1.0.6- 2025-06-30](#106---2025-06-30)
 - [1.0.5- 2025-05-30](#105---2025-05-30)
 - [1.0.4- 2025-04-28](#104---2025-04-28)
 - [1.0.3 - 2025-03-26](#103---2025-03-26)
@@ -38,6 +39,23 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Security
 - (Notify of any improvements related to security vulnerabilities or potential risks.)
+
+---
+
+## [1.0.6] - 2025-06-30
+
+### Added
+- Introduced `SyncHttpClient` for synchronous HTTP operations
+- Extended ARC broadcaster with synchronous methods: `sync_broadcast`, `check_transaction_status`, and `categorize_transaction_status`
+- Updated ARC configuration to include optional `SyncHttpClient` support
+- Added examples, tests, and utilities for synchronous transactions
+
+### Changed
+- Updated `SyncHttpClient` to inherit from `HttpClient` for consistency
+- Refactored `fetch` into higher-level HTTP methods: `get` and `post`
+- Simplified ARC broadcaster by using `get` and `post` methods for sync operations
+- Enhanced error handling and response processing in ARC transactions
+- Updated tests and examples to align with refactored `SyncHttpClient`
 
 ---
 ## [1.0.5] - 2025-05-30
