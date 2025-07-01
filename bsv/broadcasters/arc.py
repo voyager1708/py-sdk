@@ -146,30 +146,24 @@ class ARC(Broadcaster):
         """
         # Check if all inputs have source_transaction
         has_all_source_txs = all(input.source_transaction is not None for input in tx.inputs)
-        request_options = {
-            "method": "POST",
-            "headers": self.request_headers(),
-            "data": {
-                "rawTx":
-                    tx.to_ef().hex() if has_all_source_txs else tx.hex()},
-            "timeout": timeout
-        }
 
         try:
-            response = self.sync_http_client.fetch(
-                f"{self.URL}/v1/tx", request_options
+            response = self.sync_http_client.post(
+                f"{self.URL}/v1/tx",
+                data={"rawTx": tx.to_ef().hex() if has_all_source_txs else tx.hex()},
+                headers=self.request_headers(),
+                timeout=timeout
             )
 
             response_json = response.json()
+            data = response_json.get("data", {})
 
-            if response.ok and response.status_code >= 200 and response.status_code <= 299:
-                data = response_json.get("data")
-
+            if response.ok:
                 if data.get("txid"):
                     return BroadcastResponse(
                         status="success",
                         txid=data.get("txid"),
-                        message=f"{data.get('txStatus', '')} {data.get('extraInfo', '')}",
+                        message=f"{data.get('txStatus', '')} {data.get('extraInfo', '')}".strip(),
                     )
                 else:
                     return BroadcastFailure(
@@ -178,21 +172,32 @@ class ARC(Broadcaster):
                         description=data.get("detail", "Unknown error"),
                     )
             else:
+                # Handle special error cases
+                if response.status_code == 408:
+                    return BroadcastFailure(
+                        status="failure",
+                        code="408",
+                        description=f"Transaction broadcast timed out after {timeout} seconds",
+                    )
+
+                if response.status_code == 503:
+                    return BroadcastFailure(
+                        status="failure",
+                        code="503",
+                        description="Failed to connect to ARC service",
+                    )
+
                 return BroadcastFailure(
                     status="failure",
                     code=str(response.status_code),
-                    description=response_json["data"]["detail"] if "data" in response_json else "Unknown error",
+                    description=data.get("detail", "Unknown error"),
                 )
 
         except Exception as error:
             return BroadcastFailure(
                 status="failure",
                 code="500",
-                description=(
-                    str(error)
-                    if isinstance(error, Exception)
-                    else "Internal Server Error"
-                ),
+                description=str(error),
             )
 
     def check_transaction_status(self, txid: str, timeout: int = 5) -> Dict[str, Any]:
@@ -203,29 +208,26 @@ class ARC(Broadcaster):
         :param timeout: Timeout setting in seconds
         :returns: Dictionary containing transaction status information
         """
-        request_options = {
-            "method": "GET",
-            "headers": self.request_headers(),
-            "timeout": timeout
-        }
 
         try:
-            response = self.sync_http_client.fetch(
-                f"{self.URL}/v1/tx/{txid}", request_options
+            response = self.sync_http_client.get(
+                f"{self.URL}/v1/tx/{txid}",
+                headers=self.request_headers(),
+                timeout=timeout
             )
-
             response_data = response.json()
+            data = response_data.get("data", {})
 
             if response.ok:
                 return {
                     "txid": txid,
-                    "txStatus": response_data.get("txStatus"),
-                    "blockHash": response_data.get("blockHash"),
-                    "blockHeight": response_data.get("blockHeight"),
-                    "merklePath": response_data.get("merklePath"),
-                    "extraInfo": response_data.get("extraInfo"),
-                    "competingTxs": response_data.get("competingTxs"),
-                    "timestamp": response_data.get("timestamp")
+                    "txStatus": data.get("txStatus"),
+                    "blockHash": data.get("blockHash"),
+                    "blockHeight": data.get("blockHeight"),
+                    "merklePath": data.get("merklePath"),
+                    "extraInfo": data.get("extraInfo"),
+                    "competingTxs": data.get("competingTxs"),
+                    "timestamp": data.get("timestamp")
                 }
             else:
                 # Handle special error cases
@@ -251,11 +253,11 @@ class ARC(Broadcaster):
                 # Handle general error cases
                 return {
                     "status": "failure",
-                    "code": response_data.get("status", response.status_code),
-                    "title": response_data.get("title", "Error"),
-                    "detail": response_data.get("detail", "Unknown error"),
-                    "txid": response_data.get("txid", txid),
-                    "extra_info": response_data.get("extraInfo", "")
+                    "code": data.get("status", response.status_code),
+                    "title": data.get("title", "Error"),
+                    "detail": data.get("detail", "Unknown error"),
+                    "txid": data.get("txid", txid),
+                    "extra_info": data.get("extraInfo", "")
                 }
 
         except Exception as error:

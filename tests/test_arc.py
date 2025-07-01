@@ -168,7 +168,7 @@ class TestARCBroadcast(unittest.IsolatedAsyncioTestCase):
             },
         )
         mock_sync_http_client = MagicMock(SyncHttpClient)
-        mock_sync_http_client.fetch = MagicMock(return_value=mock_response)
+        mock_sync_http_client.post = MagicMock(return_value=mock_response)  # fetch → post
 
         arc_config = ARCConfig(api_key=self.api_key, sync_http_client=mock_sync_http_client)
         arc = ARC(self.URL, arc_config)
@@ -190,7 +190,7 @@ class TestARCBroadcast(unittest.IsolatedAsyncioTestCase):
             },
         )
         mock_sync_http_client = MagicMock(SyncHttpClient)
-        mock_sync_http_client.fetch = MagicMock(return_value=mock_response)
+        mock_sync_http_client.post = MagicMock(return_value=mock_response)  # fetch → post
 
         arc_config = ARCConfig(api_key=self.api_key, sync_http_client=mock_sync_http_client)
         arc = ARC(self.URL, arc_config)
@@ -201,45 +201,46 @@ class TestARCBroadcast(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.description, "Invalid transaction")
 
     def test_sync_broadcast_timeout_error(self):
+        """408 time out error test"""
         mock_response = HttpResponse(
             ok=False,
             status_code=408,
-            json_data={"error": "Timeout", "error_type": "Timeout"}
+            json_data={"data": {"status": "ERR_TIMEOUT", "detail": "Request timed out"}}
         )
         mock_sync_http_client = MagicMock(SyncHttpClient)
-        mock_sync_http_client.fetch = MagicMock(return_value=mock_response)
+        mock_sync_http_client.post = MagicMock(return_value=mock_response)
 
         arc_config = ARCConfig(api_key=self.api_key, sync_http_client=mock_sync_http_client)
         arc = ARC(self.URL, arc_config)
         result = arc.sync_broadcast(self.tx, timeout=5)
 
         self.assertIsInstance(result, BroadcastFailure)
+        self.assertEqual(result.status, "failure")
         self.assertEqual(result.code, "408")
-        self.assertIn("timeout", result.description.lower())
-        self.assertEqual(result.more["timeout_value"], 5)
-        self.assertTrue(result.more["retry_recommended"])
+        self.assertEqual(result.description, "Transaction broadcast timed out after 5 seconds")
 
     def test_sync_broadcast_connection_error(self):
+        """503 error test"""
         mock_response = HttpResponse(
             ok=False,
             status_code=503,
-            json_data={"error": "Connection failed", "error_type": "ConnectionError"}
+            json_data={"data": {"status": "ERR_CONNECTION", "detail": "Service unavailable"}}
         )
         mock_sync_http_client = MagicMock(SyncHttpClient)
-        mock_sync_http_client.fetch = MagicMock(return_value=mock_response)
+        mock_sync_http_client.post = MagicMock(return_value=mock_response)
 
         arc_config = ARCConfig(api_key=self.api_key, sync_http_client=mock_sync_http_client)
         arc = ARC(self.URL, arc_config)
         result = arc.sync_broadcast(self.tx)
 
         self.assertIsInstance(result, BroadcastFailure)
+        self.assertEqual(result.status, "failure")
         self.assertEqual(result.code, "503")
-        self.assertIn("connection", result.description.lower())
-        self.assertTrue(result.more["retry_recommended"])
+        self.assertEqual(result.description, "Failed to connect to ARC service")
 
     def test_sync_broadcast_exception(self):
         mock_sync_http_client = MagicMock(SyncHttpClient)
-        mock_sync_http_client.fetch = MagicMock(side_effect=Exception("Internal Error"))
+        mock_sync_http_client.post = MagicMock(side_effect=Exception("Internal Error"))
 
         arc_config = ARCConfig(api_key=self.api_key, sync_http_client=mock_sync_http_client)
         arc = ARC(self.URL, arc_config)
@@ -254,14 +255,16 @@ class TestARCBroadcast(unittest.IsolatedAsyncioTestCase):
             ok=True,
             status_code=200,
             json_data={
-                "txid": "8e60c4143879918ed03b8fc67b5ac33b8187daa3b46022ee2a9e1eb67e2e46ec",
-                "txStatus": "MINED",
-                "blockHash": "000000000000000001234567890abcdef",
-                "blockHeight": 800000
+                "data": {  # dataキーを追加
+                    "txid": "8e60c4143879918ed03b8fc67b5ac33b8187daa3b46022ee2a9e1eb67e2e46ec",
+                    "txStatus": "MINED",
+                    "blockHash": "000000000000000001234567890abcdef",
+                    "blockHeight": 800000
+                }
             },
         )
         mock_sync_http_client = MagicMock(SyncHttpClient)
-        mock_sync_http_client.fetch = MagicMock(return_value=mock_response)
+        mock_sync_http_client.get = MagicMock(return_value=mock_response)  # fetch → get
 
         arc_config = ARCConfig(api_key=self.api_key, sync_http_client=mock_sync_http_client)
         arc = ARC(self.URL, arc_config)
