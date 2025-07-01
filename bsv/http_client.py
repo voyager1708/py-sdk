@@ -24,10 +24,10 @@ class DefaultHttpClient(HttpClient):
     async def fetch(self, url: str, options: dict) -> HttpResponse:
         async with aiohttp.ClientSession() as session:
             async with session.request(
-                    method=options["method"],
-                    url=url,
-                    headers=options.get("headers", {}),
-                    json=options.get("data", None),
+                method=options["method"],
+                url=url,
+                headers=options.get("headers", {}),
+                json=options.get("data", None),
             ) as response:
                 try:
                     json_data = await response.json()
