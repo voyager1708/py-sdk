@@ -7,6 +7,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## Table of Contents
 
 - [Unreleased](#unreleased
+- [1.0.6.1- 2025-07-03](#1061---2025-07-03)
 - [1.0.6- 2025-06-30](#106---2025-06-30)
 - [1.0.5- 2025-05-30](#105---2025-05-30)
 - [1.0.4- 2025-04-28](#104---2025-04-28)
@@ -41,6 +42,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - (Notify of any improvements related to security vulnerabilities or potential risks.)
 
 ---
+
+## [1.0.6.1] - 2025-07-03
+
+### Fixed
+Bug Fix default_http_client and add async ARC broadcasting example 
+
+- Replaced `default_sync_http_client` with `DefaultHttpClient` in `default_http_client`.
+- Introduced a new `test_async_arc.py` example demonstrating asynchronous ARC broadcasting and transaction status checking.
 
 ## [1.0.6] - 2025-06-30
 
