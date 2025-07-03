@@ -137,4 +137,4 @@ def default_sync_http_client() -> SyncHttpClient:
 
 
 def default_http_client() -> HttpClient:
-    return default_sync_http_client()
+    return DefaultHttpClient()
