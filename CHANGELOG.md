@@ -6,7 +6,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Table of Contents
 
-- [Unreleased](#unreleased
+- [Unreleased](#unreleased)
+- [1.0.7- 2025-07-28](#107---2025-07-28)
 - [1.0.6.1- 2025-07-03](#1061---2025-07-03)
 - [1.0.6- 2025-06-30](#106---2025-06-30)
 - [1.0.5- 2025-05-30](#105---2025-05-30)
@@ -42,6 +43,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - (Notify of any improvements related to security vulnerabilities or potential risks.)
 
 ---
+## [1.0.7] - 2025-07-28
+
+### Fixed
+- Implemented default broadcasters for GorillaPool mainnet and testnet.
+- - Updated examples to use new broadcaster functions.
+
+### Added
+- Introduced `default_broadcaster` with configurable options for testnet and custom ARC configurations.
+- Added function to set API key from constant.py for Taal mainnet and testnet (`taal_broadcaster`, `taal_testnet_broadcaster`).
+
+
 
 ## [1.0.6.1] - 2025-07-03
 
