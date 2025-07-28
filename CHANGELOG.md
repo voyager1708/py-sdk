@@ -7,6 +7,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## Table of Contents
 
 - [Unreleased](#unreleased)
+- [1.0.7.1- 2025-07-28](#1071---2025-07-28)
 - [1.0.7- 2025-07-28](#107---2025-07-28)
 - [1.0.6.1- 2025-07-03](#1061---2025-07-03)
 - [1.0.6- 2025-06-30](#106---2025-06-30)
@@ -41,6 +42,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Security
 - (Notify of any improvements related to security vulnerabilities or potential risks.)
+
+
+---
+## [1.0.7.1] - 2025-07-28
+
+### Changed
+- Incremented version in `__init__.py` to 1.0.7.1.
+
+### Security
+- Updated `aiohttp` and `setuptools` dependencies to use minimum version constraints.
+- Redacted private key in threshold signature example for security.
 
 ---
 ## [1.0.7] - 2025-07-28
