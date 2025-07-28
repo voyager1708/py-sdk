@@ -39,7 +39,7 @@ def main():
         ],
         [
             TransactionOutput(
-                locking_script=P2PKH().lock("1QnWY1CWbWGeqobBBoxdZZ3DDeWUC2VLn"),
+                locking_script=P2PKH().lock("1QnWY1---------3DDeWUC2VLn"),
                 change=True
             )
         ],

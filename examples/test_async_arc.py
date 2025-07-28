@@ -8,29 +8,29 @@ from bsv import (
     PrivateKey,
     P2PKH,
     BroadcastResponse,
-    ARC,ARCConfig
 )
+from bsv.broadcasters.default import gorillapool_broadcaster, taal_broadcaster, default_broadcaster
+from bsv.broadcasters.arc import ARC
 
 """
 Simple example of synchronous ARC broadcasting and status checking.
 """
-# ARC_URL='https://api.taal.com/arc'
 
 async def main():
 # def main():
 
-    arc_config = ARCConfig(api_key="mainnet_2e3a7d0f845a5049b35e9dde98fc4271")
-    url = 'https://api.taal.com/arc'
-    arc = ARC(url, arc_config)
+    # arc = default_broadcaster()
+    # arc = taal_broadcaster()
+    arc = gorillapool_broadcaster()
     # Setup ARC broadcaster
 
 
     # Create a simple transaction
-    private_key = PrivateKey("Kzpr5a6TmrXNw2NxSzt6GUonvcP8ABtfU17bdGEjxCufyxGMo9xV")
+    private_key = PrivateKey("Kzpr5a6T-------------------dGEjxCufyxGMo9xV")
     public_key = private_key.public_key()
 
     source_tx = Transaction.from_hex(
-        "01000000013462125ff05a9150c25693bbb474a5cde58c0d4ce6ab265e746f523791e01462000000006a4730440220447ac5232e8eb25db0e004bc704a19bc33c9c7ef86070781078bce74e089be44022029195e8cc392bf7c5577dc477a90d157be0356d8fbb52eb66521f4eabe00dcf9412103e23c79a29b5e5f20127ec2286413510662d0e6befa29d669a623035122753d3affffffff013d000000000000001976a914047f8e69ca8eadec1b327d1b232cdaaffa200d1688ac00000000"
+        "0100000001d2e9a---------------------2aa43d541d38a94851700b6bb50348a8757cf0f318b4232aa1a6121a02203bc71f132461a046de661c33e0a0c93032dc085cb9591c8522b9eb0b296efcc9412103e23c79a29b5e5f20127ec2286413510662d0e6befa29d669a623035122753d3affffffff0134000000000000001976a914047f8e69ca8eadec1b327d1b232cdaaffa200d1688ac00000000"
     )
 
     tx = Transaction(
@@ -44,7 +44,7 @@ async def main():
         ],
         [
             TransactionOutput(
-                locking_script=P2PKH().lock("1QnWY1CWbWGeqobBBoxdZZ3DDeWUC2VLn"),
+                locking_script=P2PKH().lock("1KkyAC-----------pSUSx6QCPJ"),
                 change=True
             )
         ],
@@ -58,18 +58,21 @@ async def main():
     print(f"Transaction hex: {txhex}")
     # Broadcast transaction
     result = await arc.broadcast(tx)
-    # result = arc.sync_broadcast(tx)
+
+
+    # Check status
+
 
     if isinstance(result, BroadcastResponse):
-        print(f"Broadcast successful: {result.txid}")
+            print(f"Broadcast successful: {result.txid}")
 
-        # Check status
-        status = arc.check_transaction_status(result.txid)
-        print(f"Status: {status.get('txStatus', 'Unknown')}")
+            # Check status
+            status = arc.check_transaction_status(result.txid)
+            print(f"Status: {status.get('txStatus', 'Unknown')}")
 
-        # Categorize status
-        category = arc.categorize_transaction_status(status)
-        print(f"Category: {category.get('status_category')}")
+            # Categorize status
+            category = arc.categorize_transaction_status(status)
+            print(f"Category: {category.get('status_category')}")
 
     else:
         print(f"Broadcast failed: {result.description}")
