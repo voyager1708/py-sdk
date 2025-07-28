@@ -42,7 +42,7 @@ print(f"\nOriginal and recovered keys match: {is_keys_match}")
 #Check compatibility with Ts-sdk library
 
 
-ts_privatekey = "Kyig4TeeVahiY838EjiC72kzWkZXtjSj7m5axdQwPXRed57MiYUS"
+ts_privatekey = "Kyig4TeeVahiY8---------------QwPXRed57MiYUS"
 # Original Address: 179UiTpk4mqjQv6CJ4NoZqxwURym4uwV4v
 #these shares are created from the ts-sdk library.
 ts_shares = {
